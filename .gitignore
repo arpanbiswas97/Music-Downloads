@@ -1,0 +1,5 @@
+.vscode/
+downloads/
+webdriver/
+albumdata.json
+spotify_api_key.json
