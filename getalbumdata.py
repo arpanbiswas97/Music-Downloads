@@ -6,8 +6,8 @@ import spotipy
 from spotipy.oauth2 import SpotifyClientCredentials
 from selenium import webdriver
 
-def getSearchString(track_name, artist):
-    query = urlencode({'q':'{} {}'.format(track_name, artist)})
+def getSearchString(track_name, album, artist):
+    query = urlencode({'q':'{} {} {}'.format(track_name, album, artist)})
     return 'https://music.youtube.com/search?'+query
 
 # Parse Arguments
@@ -65,7 +65,7 @@ for i, track_name in enumerate(albumdata['tracks']):
     url = 'empty'
     try:
         # Search in YouTube Music
-        driver.get(getSearchString(track_name, albumdata['artist']))
+        driver.get(getSearchString(track_name, albumdata['album'], albumdata['artist']))
         time.sleep(5)
 
         # Filter results by songs
