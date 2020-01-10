@@ -35,6 +35,12 @@ albumdata['artist'] = album['artists'][0]['name']
 print('Album :', album['name'])
 albumdata['album'] = album['name']
 
+print('Date :', album['release_date'])
+albumdata['date'] = album['release_date']
+
+print('Cover :', album['images'][0]['url'])
+albumdata['cover'] = album['images'][0]['url']
+
 # Get Track Names
 print('Fetching track names.')
 albumdata['tracks'] = []
