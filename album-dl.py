@@ -26,7 +26,7 @@ for i, url in enumerate(albumdata['urls']):
     track_no = str(i+1).zfill(zpad)
     ydl_opts = {
         'format': 'bestaudio',
-        'outtmpl': '{} - %(title)s.%(ext)s'.format(track_no),
+        'outtmpl': '{}{} - %(title)s.%(ext)s'.format(directory, track_no),
         'noplaylist': True,
         'postprocessors': [{
             'key': 'FFmpegExtractAudio',
