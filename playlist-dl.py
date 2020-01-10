@@ -1,39 +1,34 @@
 import argparse
 import os
-import subprocess
+import youtube_dl
 
 # Parse Arguments
-parser = argparse.ArgumentParser(description="download a playlist from youtube")
-parser.add_argument("-d", help="download directory")
-parser.add_argument("link", help="youtube playlist link")
+parser = argparse.ArgumentParser(description='download a playlist from youtube')
+parser.add_argument('-d', help='download directory')
+parser.add_argument('link', help='youtube playlist link')
 args = parser.parse_args()
 
 # Creating Directory if needed
+directory = 'downloads/'
 if args.d:
-    if not os.path.exists(args.d):
-        print("Creating Directory", args.d)
-        os.makedirs(args.d)
+    directory += args.d
+if not os.path.exists(directory):
+    print('Creating Directory', directory)
+    os.makedirs(directory)
 
-# Call youtube-dl
-if args.d:
-    subprocess.call([
-        "youtube-dl",
-        "-f", "bestaudio",
-        "--extract-audio",
-        "--audio-format", "mp3",
-        "--audio-quality", "0",
-        "--add-metadata",
-        "--output", "%(playlist_index)s - %(title)s.%(ext)s",
-        args.link
-    ], cwd = args.d)
-else:
-    subprocess.call([
-        "youtube-dl",
-        "-f", "bestaudio",
-        "--extract-audio",
-        "--audio-format", "mp3",
-        "--audio-quality", "0",
-        "--add-metadata",
-        "--output", "%(playlist_index)s - %(title)s.%(ext)s",
-        args.link
-    ])
+# Use youtube_dl
+ydl_opts = {
+    'format': 'bestaudio',
+    'outtmpl': directory+'%(playlist_index)s - %(title)s.%(ext)s',
+    'postprocessors': [{
+        'key': 'FFmpegExtractAudio',
+        'preferredcodec': 'mp3',
+        'preferredquality': '0'
+    }, {
+        'key': 'FFmpegMetadata'
+    }]
+}
+with youtube_dl.YoutubeDL(ydl_opts) as ydl:
+    ydl.download([args.link])
+
+print('Done!')
