@@ -1,6 +1,5 @@
 .vscode/
 downloads/
 webdriver/
-geckodriver.log
 albumdata.json
 spotify_api_key.json
