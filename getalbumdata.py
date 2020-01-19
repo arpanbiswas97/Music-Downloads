@@ -1,10 +1,10 @@
 import argparse
 import json
 from urllib.parse import urlencode
-import time
 import spotipy
 from spotipy.oauth2 import SpotifyClientCredentials
 from selenium import webdriver
+import time
 
 def getSearchString(track_name, album, artist):
     query = urlencode({'q':'{} {} {}'.format(track_name, album, artist)})
@@ -17,10 +17,10 @@ args = parser.parse_args()
 
 # Spotify Client Credentials
 creds = {}
-with open('spotify_credentials.json') as creds_file:
+with open('spotify_api_key.json') as creds_file:
     creds = json.load(creds_file)
 
-creds_manager = SpotifyClientCredentials(creds['client_id'], creds['secret'])
+creds_manager = SpotifyClientCredentials(creds['id'], creds['secret'])
 sp = spotipy.Spotify(client_credentials_manager=creds_manager)
 
 albumdata = {} # Dictionary to be written as albumdata.json
@@ -58,15 +58,15 @@ for i, track in enumerate(tracks):
 # Get Track Links
 print('Fetching YouTube Music urls.')
 albumdata['urls'] = []
-driver = webdriver.Firefox(executable_path="webdriver/geckodriver")
+driver = webdriver.Chrome(executable_path='webdriver/chromedriver.exe')
 
 for i, track_name in enumerate(albumdata['tracks']):
-    print(i+1, track_name, end=' ')
+    print(i+1, track_name)
     url = 'empty'
     try:
         # Search in YouTube Music
         driver.get(getSearchString(track_name, albumdata['album'], albumdata['artist']))
-        time.sleep(5)
+        time.sleep(3)
 
         # Filter results by songs
         categories_section = driver.find_element_by_id('chips')
@@ -75,23 +75,23 @@ for i, track_name in enumerate(albumdata['tracks']):
             if category.find_element_by_tag_name('span').text == 'Songs':
                 category.click()
                 break
-        time.sleep(5)
-
-        # Load the first result
-        driver.find_element_by_tag_name('ytmusic-play-button-renderer').click()
-        time.sleep(5)
+        
+        input('Waiting... Press Enter to Continue')
 
         # Save the url
         url = driver.current_url
     except:
-        pass
-    print(url)
+        print('Error!')
     albumdata['urls'].append(url)
 
 driver.close()
 
+json_dump = json.dumps(albumdata, indent=4)
+
 print('Writing to file.')
+print(json_dump)
+
 with open('albumdata.json', 'w') as albumdata_file:
-    albumdata_file.write(json.dumps(albumdata, indent=4))
+    albumdata_file.write(json_dump)
 
 print('Done!')
